@@ -1,0 +1,50 @@
+1) -
+    1. Another method to deal with priority inversion is random boosting.
+        This method gives processes holding locks in the ready queue a random priority boost until they release the lock or finish their critical section execution.
+    2. In the priority inversion problem, a low priority process holding the lock continues to run even while a high priority process is in line behind it waiting for that lock. 
+        I utilized the time to finish the identical set of tasks using semaphore and locks in order to compare the outcomes of the two implementation methods. 
+        The output showing the same is shown below:
+
+        Test 1: test the semaphore implementation
+        -start writer, then sleep 1s. semaphore granted to write (prio 20)
+        writer: to acquire semaphore
+        writer: acquired semaphore, sleep 3s
+        -start reader A, then sleep 5s. reader A(prio 50) blocked on the semaphore
+        reader A: to acquire semaphore
+        writer: to release semaphore
+        reader A: acquired semaphore, sleep 1s
+        reader A: to release semaphore
+        -start reader B, then sleep 5s. reader B(prio 55) blocked on the semaphore
+        reader B: to acquire semaphore
+        reader B: acquired semaphore, sleep 2s
+        reader B: to release semaphore
+        Total time: 1100
+        -kill reader A, then sleep 1s
+        -kill reader B, then sleep 1s
+
+        Test 1: test the lock implementation
+        -start writer, then sleep 1s. lock granted to write (prio 20)
+        writer: to acquire lock
+        writer: acquired lock, sleep 2s
+        -start reader A, then sleep 5s. reader A(prio 50) blocked on the lock
+        reader A: to acquire lock
+        -start reader B, then sleep 5s. reader B(prio 55) blocked on the lock
+        reader B: to acquire lock
+        reader B: acquired lock, sleep 1s
+        reader B: to release lock
+        writer: to release lock
+        reader A: acquired lock, sleep 1s
+        reader A: to release lock
+        Total time: 1100
+        -kill reader B, then sleep 1s
+        -kill reader A, then sleep 1s
+
+2) - 
+    1. Since a global semaphore is being used, data is written to the buffer.
+        One reader thread may have gained the lock and semaphore and updated the buffer at the same time.
+        But, because it is a counting semaphore, a writer can also access it by executing the function buffer add, which updates the buffer. If you have a working semaphore, you can use this function without first gaining the lock.
+        A writer thread could so cause the buffer to be inconsistent.
+    2. If the reader or writer program crashed then there will be a deadlock situation.
+    3. If the number of readers is large then writer have to wait for a long time which leads to starvation problem
+    4. Multiple reader can aquire the read lock and perform some write operations
+    5. If 4rd happens, since the read locks are not exclusive so it can lead to inconsistent data

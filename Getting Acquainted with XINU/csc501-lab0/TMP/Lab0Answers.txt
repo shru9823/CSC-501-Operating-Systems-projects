@@ -1,0 +1,121 @@
+Name - Shruti Kohakade
+Unity_id - smkohaka
+
+1. Assuming the XINU text begins at address 0x0, draw a rough diagram of XINU’s memory layout with addresses derived from your experimental measurements. Include the information you uncovered from running your version of printsegaddress() and printprocstks().
+Ans:
+|              |
+|	Free	   |
+-------------------- base pointer
+|              |     (stack base)  0x00ffeff8
+|	    	   |
+|              |     stack pointer 0x00ffef90
+|	Stack      |
+|		       |     stack size    0x00001000 (4096)
+|		       |
+-------------------- stack limit = 0x00ffdffc
+|		       |
+|		       |
+|		       |
+|		       |
+|	Heap       |
+-------------------- end   0x0002f0f8
+|	BSS	       |
+-------------------- edata 0x0002553d
+|	Data	   |
+-------------------- etext 0x0001fa87
+|	Text	   |
+-------------------- start 0x00000000
+
+
+2. What is the difference in stack top address before and after calling printtos() ? Draw a diagram to illustrate what are the contents of the items pushed into the stack between these two time points.
+Ans:
+When the printtos() function is called, the values stored in the return address and the base pointer of main process are pushed onto the stack.
+These values are stored in the instruction pointer (eip) register.
+
+Difference between stack top address before and after printtos():
+	before		: 0x00ffefc0
+	after		: 0x00ffefb8
+	difference	: 8 bytes
+
+Diagram:
+
+|top of    |
+| stack    |
+|__________| <-- stack pointer
+| locals   |
+|   of	   |
+| printtos |
+|__________| <-- stack top address after printtos call
+|	       |
+|	       |
+|  old ebp |
+|__________|
+|	       |
+| return   |
+| address  |
+|__________| <-- stack top address before printtos call
+
+3. Which byte order is adopted in the host machine that we are using ? How did you find out ?
+Ans:
+Little Endian
+    1) This can be found using the following command:
+            lscpu | grep Endian
+
+        Output of this command:
+            Byte Order:            Little Endian
+
+        lscpu - display information about the CPU architecture
+        It has an attribute called "Byte Order" which stores the type of byte order is adopted in the host machine that we are using.
+        'grep' uses the output from 'lscpu' command and searches for the string 'Endian' in it.
+
+
+    2)  Also, in compile/Configuration file and h/conf.h file, it is mentioned that
+        #define	BYTE_ORDER	LITTLE_ENDIAN
+        which tells us that it uses Little Endian byte order
+
+4. Briefly describe the mov, push, pusha, pop, and popa instructions in the x86.
+Ans:
+    a) mov: This is move instruction. It copies the src operand into the dest operand
+        After the operation both operands contain the same contents.
+        Its syntax is - mov src,dest
+        src can be immediate value, register or	memory
+        dest can be register or memory
+
+    b) push: This is push instruction. It copies specified word to top of stack. Firstly, it will decrement the esp (stack pointer) by 4  and then place the operand on memory location at esp.
+        Its syntax is push <A>
+        where <A> can be a memory, 32-bit register, memory or 32-bit constant.
+
+    c) pusha: This is push all instruction. It copies all registers to stack.
+        This is used when the operand size is 16.
+        The order in which registers are stored on the stack - AX, CX, DX, BX, original SP, BP, SI, and DI.
+
+    d) pop: This is a pop instruction.
+        It removes the 4-byte data element from the top of the stack into the specified operand (i.e. register or memory location).
+        First of all, it moves the 4 bytes located at memory location [SP] into the specified memory location or register.
+        It then increments SP by 4.
+        Its syntax is pop <A>.
+        where <A> can be register or memory location.
+
+    e) popa: This is pop all instruction.
+        It pops words from the stack into general-purpose registers and is used when the size of operand is 16.
+        The order in which registers are loaded - DI, SI, BP, BX, DX, CX, and AX.
+
+5. In a stack frame, local variables are stored below the top of the stack. In task 3, does your result show all the local variables declared in your printtos function? If not, can you explain that? (hint: try to disable the compiler optimization by specifying -O0 in your Makefile)
+Ans:
+No, the result of task 3 doesn't show all the variables declared in the printtos() function.
+The aim of the compiler is to decrease the cost of compilation.
+Due to compiler optimization, it does not allocate the stack memory for the local variables.
+This compiler optimization step analyzes the code and assigns available registers to the local variables.
+So, compiler does optimization based on its knowledge about the program and thus printtos() function execution doesn't show all the variables.
+
+
+[References -
+    [1] ref - https://en.wikibooks.org/wiki/X86_Assembly/Data_Transfer
+    [2] ref - https://www.cs.virginia.edu/~evans/cs216/guides/x86.html#:~:text=The%20push%20instruction%20places%20its,location%20at%20address%20%5BESP%5D.
+    [3] ref - https://c9x.me/x86/html/file_module_x86_id_270.html
+    [4] ref - https://www.cs.virginia.edu/~evans/cs216/guides/x86.html#:~:text=The%20pop%20instruction%20removes%20the,then%20increments%20SP%20by%204.
+    [5] ref - https://c9x.me/x86/html/file_module_x86_id_249.html
+    [6] ref - https://man7.org/linux/man-pages/man1/lscpu.1.html
+]
+
+		

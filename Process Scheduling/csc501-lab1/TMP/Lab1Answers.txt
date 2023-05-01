@@ -1,0 +1,51 @@
+Unity id - smkohaka
+Name - Shruti Kohakade
+
+1. What are the advantages and disadvantages of each of the two scheduling policies? Also, give the advantages and disadvantages of the round robin scheduling policy originally implemented in Xinu.
+ans:
+    Aging Based Scheduler
+	Advantages:
+	1) It helps to prevent starvation of low priority processes, as the priority of waiting processes gradually increases over time.
+    2) It can improve the responsiveness and fairness of the system by ensuring that long-running processes do not consume all resources and that shorter processes get a chance to execute.
+    Disadvantages:
+	1) It may not be suitable for all types of systems, because it requires an understanding of all the ready queue processes characteristics to determine appropriate aging parameters.
+    2) It can cause performance issues by unnecessary delay in process execution because of aging parameters.
+    3) It can be less efficient as compared to other scheduling algorithms for systems with a high rate of ready state processes, as the calculations for aging can be time-consuming.
+
+    Linux-like Scheduler:
+	Advantages:
+	1) Real-time support: The scheduler provides support for real-time processes which have strict deadlines.
+	2) Fairness: Fair CPU time allocation is provided to all running processes.
+    3) Responsiveness: The scheduler is designed to be responsive to minimize the latency between ready state process and execution of process.
+    4) Prioritization: The scheduler assigns different priorities to different processes, so that more important processes can be given higher priority and run more frequently.
+    Disadvantages:
+	1) Complexity: The scheduler is complex as it requires to check multiple processes quantum and goodness everytime reschedule is called.
+    2) Starvation: In some cases, low priority processes may face starvation of CPU time if higher priority processes are constantly running.
+    3) Overhead: The scheduler can add overhead to the system, as it needs to check quantum and goodness of processes and reorder the scheduling of processes.
+
+    Round Robin Scheduler in XINU:
+	Advantages:
+	1) Easy to implement and understand
+	2) Higher priority processes get even time for execution
+	3) Provides fair allocation of CPU time to each process
+	Disadvantages:
+	1) The low priority processes might suffer because of frequent incoming high priority processes
+	2) System performance can decrease if time quantum is short and there is increased context switching
+
+
+2. Describe when each of the schedulers run the NULL process.
+ans:
+    1) In aging-based scheduler, the NULL process is run when there are no other processes in ready queue, as it has the lowest priority.
+    2) In Linux-like scheduler, the NULL process is used as a placeholder for the CPU when there are no other processes in the run queue.
+       It is scheduled to run whenever there are no other processes waiting to get executed.
+
+3. Give two suggestions how the above mentioned aging based scheduler could be changed to attain better fairness keeping the fundamental point of incrementing the priority to be the same in your new ideas.
+ans:
+    1) One approach to improve fairness in the aging-based scheduler keeping incrementing priority over time is to use a weighted priority approach, where the priority increment is adjusted based on the age of the process.
+       This means that processes that have been waiting for a longer time would receive a larger priority boost compared to newer processes.
+    2) Second approach is to implement a priority decay mechanism, where the priority of a process decreases over time if it has not been scheduled.
+       This would prevent some processes from monopolizing the CPU and give other processes with lower priorities a fair chance to run.
+    3) Third approach is to use a multi-level feedback queue approach.
+       In this approach, each process is assigned to a priority queue and the priority of a process is increased over time as it waits in the queue.
+       However, if a process spends too much time in a high-priority queue without being scheduled, it is transferred to a lower-priority queue.
+       This prevents long-waiting processes from starving low-priority processes.
